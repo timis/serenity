@@ -99,13 +99,34 @@ TEST_CASE(logarithms)
 {
     EXPECT(isnan(log(-1)));
     EXPECT(log(0) < -1000000);
-    EXPECT_CLOSE(log(0.5), -0.693233)
+    EXPECT_CLOSE(log(1.5), -0.693233)
     EXPECT_CLOSE(log(1.1), 0.095310)
     EXPECT_CLOSE(log(5), 1.609480)
     EXPECT_CLOSE(log(5.5), 1.704842)
     EXPECT_CLOSE(log(500), 6.214104)
     EXPECT_CLOSE(log2(5), 2.321989)
     EXPECT_CLOSE(log10(5), 0.698988)
+}
+
+TEST_CASE(frexps)
+{
+    struct values {
+        double v;
+        int exp;
+        double ExpectedValue;
+        int ExpectedExponent;
+    };
+
+    values values[4] {
+        {1.00000, 0, 1.000000, 0},
+        {2.00000, 0, 1.000000, 1},
+        {1.50000, 0, 0.750000, 1},
+        {0.00000, 0, 0.000000, 0}
+    };
+    for (auto& v : values) {
+        EXPECT_CLOSE(frexp(v.v, &v.exp),v.ExpectedValue)
+        EXPECT_EQ(v.exp,v.ExpectedExponent)
+    }
 }
 
 TEST_MAIN(Math)

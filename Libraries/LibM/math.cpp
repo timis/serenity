@@ -376,21 +376,48 @@ long double log2l(long double x)
     return log2(x);
 }
 
-double frexp(double, int*)
+double frexp(double value, int* ptr)
 {
-    ASSERT_NOT_REACHED();
-    return 0;
+    union {
+        double v;
+        int i;
+    } u;
+    if(value){
+        u.v = value;
+        int exponent = (u.i & 0x7f800000)>>23;
+        *ptr = exponent - (127-1);
+        u.i &= ~0x7f800000;
+        u.i |= (127 << 23);
+        return u.v;
+    } else {
+        *ptr = 0;
+        return 0.0;
+    }
 }
 
-float frexpf(float, int*)
+
+float frexpf(float value, int* ptr)
 {
-    ASSERT_NOT_REACHED();
-    return 0;
+    return frexp(value,ptr);
 }
 
-long double frexpl(long double, int*)
+long double frexpl(long double value, int* ptr)
 {
-    ASSERT_NOT_REACHED();
+    union {
+        long double v;
+        long long i;
+    } u;
+    if(value){
+        u.v = value;
+        int exponent = (u.i & 0x7ff0000000000000)>>52;
+        *ptr = exponent - (1023-1);
+        u.i &= ~0x7ff0000000000000;
+        u.i |= (1023 << 52);
+        return u.v;
+    } else {
+        *ptr = 0;
+        return 0.0;
+    }
     return 0;
 }
 
